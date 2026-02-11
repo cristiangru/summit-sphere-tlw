@@ -66,7 +66,7 @@ export function Navbar() {
             <Link href="/" className="flex items-center gap-2 sm:gap-3 lg:gap-4 z-50 group flex-shrink-0">
               <motion.div whileHover={{ scale: 1.08, rotate: 3 }} whileTap={{ scale: 0.96 }} className="flex items-center justify-center">
                 <Image
-                  src="/img/logo.png"
+                  src="/images/logo.png"
                   alt="SummitSphere"
                   width={100}
                   height={100}

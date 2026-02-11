@@ -51,7 +51,7 @@ const Footer = () => {
           <div className="flex flex-col items-center sm:items-start space-y-6">
             <Link href="/" className="inline-flex items-center gap-3 group">
               <Image
-                src="/img/logo.png"
+                src="/images/logo.png"
                 alt="SummitSphere Logo"
                 width={48}
                 height={48}
