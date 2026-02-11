@@ -159,7 +159,7 @@ const Footer = () => {
                     Telefon
                   </p>
                   <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-[#2d9b92]">
-                    +40 721 234 567
+                    +40 764 507 330
                   </p>
                 </div>
               </a>

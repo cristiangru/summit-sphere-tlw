@@ -148,9 +148,10 @@ const CardDescription = ({
   children: React.ReactNode;
 }) => {
   return (
-    <p
+   <p
       className={cn(
         "mt-3 text-base leading-relaxed text-gray-600",
+        "text-justify [hyphens:auto]", // <-- Adaugă aceste clase
         "line-clamp-3 md:line-clamp-4",
         className
       )}

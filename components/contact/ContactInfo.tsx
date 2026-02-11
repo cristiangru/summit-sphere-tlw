@@ -39,7 +39,7 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start mt-12">
           
           {/* Left Side - 3D Pins */}
-          <div className="lg:col-span-5 space-y-12 py-10">
+          <div className="lg:col-span-5 space-y-20 py-10">
             {contactInfo.map((info, index) => {
               const IconComponent = info.icon;
               return (

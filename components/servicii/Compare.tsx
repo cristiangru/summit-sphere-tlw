@@ -29,8 +29,8 @@ export default function CompareDemo() {
             >
               <div className="w-full h-full overflow-hidden rounded-xl md:rounded-[1.2rem] bg-white">
                 <Compare
-                  firstImage="/img/compare/1.png"
-                  secondImage="https://assets.aceternity.com/linear-dark.png"
+                  firstImage="/images/compare/c1.png"
+                  secondImage="/images/compare/c2.png"
                   firstImageClassName="object-cover w-full h-full"
                   secondImageClassname="object-cover w-full h-full"
                   className="w-full h-full"

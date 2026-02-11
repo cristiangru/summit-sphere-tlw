@@ -115,19 +115,19 @@ export default function FAQSection() {
   const faqItems = [
     {
       q: "Ce tipuri de evenimente organizați?",
-      a: "SummitSphere organizează o gamă variată de evenimente în domeniul medical, inclusiv conferințe, simpoziume, workshopuri și evenimente de networking, toate concepute pentru a sprijini educația continuă și schimbul de cunoștințe între profesioniștii din sănătate.",
+      a: "SummitSphere organizează o gamă variată de evenimente în domeniul medical, inclusiv conferințe, simpozioane, workshopuri și evenimente de networking, toate concepute pentru a sprijini educația continuă și schimbul de cunoștințe între profesioniștii din sănătate.",
     },
     {
       q: "Care este scopul principal al evenimentelor SummitSphere?",
-      a: "Scopul principal al evenimentelor noastre este de a aduna împreună profesioniști din domeniul sănătății pentru a facilita învățarea continuă, schimbul de cunoștințe și colaborarea, contribuind astfel la evoluția sectorului medical.",
+      a: "Scopul principal al evenimentelor noastre este de a aduce împreună profesioniști din domeniul sănătății pentru a facilita învățarea continuă, schimbul de cunoștințe și colaborarea, contribuind astfel la evoluția sectorului medical.",
     },
     {
       q: "Ce valori promovează SummitSphere?",
-      a: "Valorile noastre fundamentale sunt inovația, colaborarea, integritatea și calitatea. Ne concentrăm pe livrarea unor evenimente de înaltă calitate care reflectă cele mai recente tendințe din domeniul medical.",
+      a: "Valorile noastre fundamentale sunt inovația, colaborarea, integritatea și calitatea. Ne concentrăm pe livrarea unor evenimente de înaltă calitate care reflectă cele mai recente tendințe din domeniul medical și ne angajăm să sprijinim dezvoltarea continuă a profesioniștilor din acest sector.",
     },
     {
       q: "Cum asigură SummitSphere succesul evenimentelor sale?",
-      a: "SummitSphere asigură succesul evenimentelor printr-o abordare atentă și detaliată, care include o selecție riguroasă a speakerilor, un concept creativ solid și o execuție perfectă. Fiecare detaliu este gândit pentru a livra o experiență memorabilă.",
+      a: "SummitSphere asigură succesul evenimentelor printr-o abordare atentă și detaliată, care include o selecție riguroasă a speakerilor, un concept creativ solid, și o execuție perfectă. Fiecare detaliu este gândit pentru a livra o experiență memorabilă și valoroasă pentru participanți.",
     },
   ];
 

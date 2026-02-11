@@ -89,10 +89,9 @@ export default async function BlogDetailPage({
 <div className="mt-20 pt-10 border-t border-zinc-100 bg-white relative z-20 flex justify-center sm:justify-start">
   <Link href="/blog" className="group block w-full sm:w-auto">
     <HoverBorderGradient
-      containerClassName="rounded-full w-full sm:w-auto"
-      as="div"
+   
       // Am scos bg-black de aici pentru a nu mai avea acel bloc negru solid
-      className="bg-white dark:bg-zinc-950 text-black dark:text-white flex items-center justify-center space-x-2 px-8 py-4 text-base shadow-sm"
+      className="bg-white  text-black  flex items-center justify-center space-x-2 px-8 py-4 text-base shadow-sm"
     >
       <span className="transition-transform duration-200 group-hover:-translate-x-1">←</span>
       <span>Înapoi la toate articolele</span>

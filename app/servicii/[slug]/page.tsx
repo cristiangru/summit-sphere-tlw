@@ -74,8 +74,8 @@ const servicesData = {
     },
   },
   "simpozioane-medicale": {
-    title: "Simpoziume Medicale",
-    shortDescription: " Simpoziume Medicale",
+    title: "simpozioane Medicale",
+    shortDescription: " Simpozioane Medicale",
     color: "from-orange-500 to-amber-500",
     introduction: {
       content: [
@@ -84,7 +84,7 @@ const servicesData = {
         "De la stabilirea conceptului și selecția tematicilor de actualitate, până la managementul lectorilor, logistică de ultimă generație și promovare strategică, oferim servicii complete, adaptate standardelor din domeniul medical și academic. Ne ocupăm de toate aspectele tehnice esențiale – sonorizare, videoproiecție, sisteme de înregistrare profesională – pentru a asigura o desfășurare impecabilă a fiecărei sesiuni.",
         "În același timp, sprijinim vizibilitatea evenimentului prin campanii de comunicare dedicate, atrăgând un public țintă format din specialiști, cercetători și lideri de opinie din sănătate. Toate aceste elemente sunt gândite într-o abordare unitară, care pune accent pe excelență științifică, profesionalism organizatoric și impact pe termen lung.",
         "Organizarea unui simpozion medical cu SummitSphere înseamnă garanția unui eveniment desfășurat la cele mai înalte standarde, cu respectarea deplină a normelor etice, a principiilor de confidențialitate și a standardelor internaționale de calitate în domeniul conferințelor științifice.",
-        "SummitSphere – pentru simpoziume medicale care nu doar informează, ci formează și inspiră viitorul sănătății!",
+        "SummitSphere – pentru simpozioane medicale care nu doar informează, ci formează și inspiră viitorul sănătății!",
       ],
     },
   },
@@ -114,7 +114,7 @@ const servicesData = {
       content: [
         "Transformările rapide din era digitală au schimbat fundamental modul în care comunitățile profesionale interacționează, învață și colaborează.",
         "În acest context, organizarea și gestionarea evenimentelor medicale online a devenit o soluție indispensabilă pentru menținerea schimbului de cunoștințe la cel mai înalt nivel, indiferent de distanțe geografice.",
-        "La SummitSphere, oferim soluții complete și personalizate pentru organizarea de conferințe, simpoziume, workshop-uri și seminarii în format virtual sau hibrid, adaptate rigorilor și exigențelor domeniului medical.",
+        "La SummitSphere, oferim soluții complete și personalizate pentru organizarea de conferințe, simpozioane, workshop-uri și seminarii în format virtual sau hibrid, adaptate rigorilor și exigențelor domeniului medical.",
         "Ne ocupăm de toate aspectele tehnice și operaționale, de la selecția platformelor digitale potrivite (Zoom, Teams, Webex, platforme customizate) până la suportul logistic pentru difuzarea live, înregistrarea sesiunilor, gestionarea interacțiunii cu publicul și asigurarea unei experiențe fluide pentru toți participanții.",
         "Punem accent pe securitatea datelor, calitatea transmisiunii și protecția informațiilor științifice, respectând standardele internaționale de confidențialitate și reglementările GDPR aplicabile în domeniul medical.",
         "Fiecare eveniment online este conceput pentru a menține implicarea și atenția participanților, prin utilizarea unor funcționalități avansate de Q&A, sondaje live, sesiuni de networking virtual, camere de lucru în grup și zone expoziționale digitale.",
@@ -167,7 +167,7 @@ export default function ServiceDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* LEFT: Accent Card - Mai îngust și compact */}
-          <aside className="lg:col-span-5 lg:sticky lg:top-32 self-start z-20"> 
+          <aside className="lg:col-span-5 lg:sticky lg:top-40 self-start z-40"> 
             <div className="relative group overflow-hidden rounded-[2rem] bg-slate-900 p-8 shadow-xl border border-white/5">
               <Meteors number={15} />
               
