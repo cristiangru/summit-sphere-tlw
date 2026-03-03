@@ -76,7 +76,7 @@ const CORE_HEADERS = {
  * - frame-ancestors: Clickjacking prevention
  */
 const buildCSP = (): string => {
-  const clerkDomain = "https://relative-kangaroo-55.clerk.accounts.dev";
+  const clerkDomain = "https://clerk.d1smwj4mjvlfi.amplifyapp.com";
   
   const cspParts = [
     // ✅ 1. DEFAULT
@@ -94,6 +94,9 @@ const buildCSP = (): string => {
       "https://www.google-analytics.com " +
       "https://recaptcha.google.com " +
       "https://*.recaptcha.net",
+      
+// ✅ WORKERS - Clerk are nevoie de blob pentru managementul sesiunii
+    "worker-src 'self' blob: https://*.clerk.accounts.dev",
 
     // ✅ 3. STYLES
     "style-src 'self' 'unsafe-inline' " +
