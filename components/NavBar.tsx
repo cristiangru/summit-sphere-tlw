@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -30,11 +30,15 @@ export function Navbar() {
     { name: "Acasă", href: "/" },
     { name: "Povestea noastră", href: "/despre-noi" },
     { name: "Servicii", href: "/servicii" },
+        { name: "Parteneri", href: "/parteneri" },
     { name: "Portofoliu", href: "/portofoliu" },
     { name: "Blog", href: "/blog" },
   ];
 
   const pathname = usePathname();
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <>

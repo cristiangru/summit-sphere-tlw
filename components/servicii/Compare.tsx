@@ -29,8 +29,8 @@ export default function CompareDemo() {
             >
               <div className="w-full h-full overflow-hidden rounded-xl md:rounded-[1.2rem] bg-white">
                 <Compare
-                  firstImage="/images/compare/c1.png"
-                  secondImage="/images/compare/c2.png"
+                  firstImage="/images/compare/c6.png"
+                  secondImage="/images/compare/c5.png"
                   firstImageClassName="object-cover w-full h-full"
                   secondImageClassname="object-cover w-full h-full"
                   className="w-full h-full"

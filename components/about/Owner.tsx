@@ -36,7 +36,7 @@ export default function OwnerSection() {
 
               {/* Founder Label */}
               <div className="mt-8">
-                <h3 className="text-3xl font-bold tracking-tighter text-black">Miruna</h3>
+                <h3 className="text-3xl font-bold tracking-tighter text-black">Miruna Bușu </h3>
                 <p className="text-[#2D9A8F] font-medium tracking-tight">Founder & CEO, SummitSphere</p>
               </div>
             </motion.div>

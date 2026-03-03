@@ -2,13 +2,23 @@
 
 import { LinkPreview } from "@/components/ui/link-preview";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Phone, Instagram, Facebook } from "lucide-react";
+import { Mail, MapPin, Phone, Instagram, Facebook, ShieldCheck } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
+  // Funcție pentru a deschide bannerul de cookies
+  const openCookieSettings = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.dispatchEvent(new Event("open-cookie-settings"));
+  };
+  const pathname = usePathname();
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
   const quickLinks = [
     { name: "Acasă", href: "/" },
     { name: "Despre noi", href: "/despre-noi" },
@@ -28,8 +38,8 @@ const Footer = () => {
 
   const regulatoryLinks = [
     { name: "ANPC", href: "https://anpc.ro/" },
-    { name: "SAL", href: "/sal" },
-    { name: "SOL", href: "https://ec.europa.eu/consumers/odr" },
+    { name: "SAL", href: "https://reclamatiisal.anpc.ro/" },
+    { name: "SOL", href: "https://consumer-redress.ec.europa.eu/site-relocation_en?event=main.home2.show&lng=RO" },
   ];
 
   const socialLinks = [
@@ -44,9 +54,9 @@ const Footer = () => {
 
   return (
     <footer className="w-full bg-gradient-to-b from-white to-neutral-50 dark:from-neutral-950 dark:to-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
-      {/* Container principal - Am schimbat py-12/20 în pt (sus) și pb (jos mai mic) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 md:pt-20 pb-6 sm:pb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 sm:gap-10 lg:gap-8 mb-10">
+          
           {/* Col 1 - Brand */}
           <div className="flex flex-col items-center sm:items-start space-y-6">
             <Link href="/" className="inline-flex items-center gap-3 group">
@@ -68,7 +78,7 @@ const Footer = () => {
                 <motion.a
                   key={social.label}
                   href={social.href}
-                  className="p-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:from-[#06b6d4] to-[#2D9A8F] dark:hover:bg-emerald-900/30 transition-colors duration-300"
+                  className="p-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 transition-colors duration-300"
                   whileHover={{ scale: 1.1, y: -2 }}
                 >
                   <social.icon className="h-5 w-5 text-neutral-700 dark:text-neutral-300 hover:text-[#2d9b92]" />
@@ -96,35 +106,54 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Col 3 - Legal */}
-          <div className="flex flex-col items-center sm:items-start space-y-4">
-            <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
-              Legal
-            </h3>
-            <ul className="space-y-2.5 sm:space-y-3 text-center sm:text-left">
-              {legalLinks.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#2d9b92] transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <div className="flex flex-wrap gap-1.5 pt-2 justify-center sm:justify-start">
-              {regulatoryLinks.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-[10px] text-neutral-600 border border-neutral-200 dark:border-neutral-800 px-2 py-0.5 rounded hover:bg-neutral-100 font-bold uppercase"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
-          </div>
+{/* Col 3 - Legal */}
+<div className="flex flex-col items-center sm:items-start space-y-4">
+  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
+    Legal
+  </h3>
+  
+  {/* Link-urile standard */}
+  <ul className="space-y-2.5 sm:space-y-3 text-center sm:text-left">
+    {legalLinks.map((item) => (
+      <li key={item.name}>
+        <Link
+          href={item.href}
+          className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#2d9b92] transition-colors"
+        >
+          {item.name}
+        </Link>
+      </li>
+    ))}
+  </ul>
+  
+  {/* Secțiunea de Badge-uri / Regulatory */}
+  <div className="flex flex-col gap-2  items-center sm:items-start">
+    {/* Butonul de Cookies - Plasat deasupra */}
+    <button
+      onClick={openCookieSettings}
+      className="w-fit text-[11px] text-neutral-600 border border-neutral-200  px-3 py-1 rounded hover:bg-neutral-100 font-bold  flex items-center gap-1.5 transition-colors"
+    >
+      <span className="relative flex h-1.5 w-1.5">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+      </span>
+      Setări  Cookies
+    </button>
+
+    {/* Grupul de butoane ANPC / SAL / SOL - Sub butonul de cookies */}
+    <div className="flex flex-wrap gap-1.5 justify-center sm:justify-start">
+      {regulatoryLinks.map((item) => (
+        <Link
+          key={item.name}
+          href={item.href}
+          className="text-[10px] text-neutral-600 border border-neutral-200 dark:border-neutral-800 px-2 py-0.5 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 font-bold uppercase transition-colors"
+        >
+          {item.name}
+        </Link>
+      ))}
+    </div>
+  </div>
+</div>
 
           {/* Col 4 - Contact */}
           <div className="flex flex-col items-center sm:items-start space-y-4">
@@ -132,48 +161,32 @@ const Footer = () => {
               Contact
             </h3>
             <div className="space-y-4 w-full flex flex-col items-center sm:items-start">
-              {/* Email */}
-              <a
-                href="mailto:contact@summitsphere.ro"
-                className="flex items-center sm:items-start gap-3 group text-center sm:text-left"
-              >
+              <a href="mailto:office@summitsphere.ro" className="flex items-center sm:items-start gap-3 group text-center sm:text-left">
                 <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-[#2d9b92] mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-[10px] text-neutral-500 uppercase font-bold">
-                    Email
-                  </p>
-                  <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-[#2d9b92]break-all">
-                 office@summitsphere.ro
+                  <p className="text-[10px] text-neutral-500 uppercase font-bold">Email</p>
+                  <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-[#2d9b92] break-all">
+                    office@summitsphere.ro
                   </p>
                 </div>
               </a>
 
-              {/* Telefon */}
-              <a
-                href="tel:+40721234567"
-                className="flex items-center sm:items-start gap-3 group text-center sm:text-left"
-              >
+              <a href="tel:+40764507330" className="flex items-center sm:items-start gap-3 group text-center sm:text-left">
                 <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-[#2d9b92] mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-[10px] text-neutral-500 uppercase font-bold">
-                    Telefon
-                  </p>
+                  <p className="text-[10px] text-neutral-500 uppercase font-bold">Telefon</p>
                   <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-[#2d9b92]">
                     +40 764 507 330
                   </p>
                 </div>
               </a>
 
-              {/* Adresă */}
               <div className="flex items-center sm:items-start gap-3 text-center sm:text-left">
                 <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-[#2d9b92] mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-[10px] text-neutral-500 uppercase font-bold">
-                    Locație
-                  </p>
+                  <p className="text-[10px] text-neutral-500 uppercase font-bold">Locație</p>
                   <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-tight">
-                    Șoseaua Chitilei nr. 23,
-                    <br /> Sector 1, București
+                    Șoseaua Chitilei nr. 23, <br /> Sector 1, București
                   </p>
                 </div>
               </div>
@@ -181,10 +194,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Divider - Am scăzut marginile (my-6 în loc de my-12) */}
         <div className="border-t border-neutral-200 dark:border-neutral-800 my-6"></div>
 
-        {/* Bottom Section - Spațiu foarte mic acum sub Powered By */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 text-center sm:text-left">
             © {currentYear}{" "}
@@ -194,14 +205,12 @@ const Footer = () => {
             . Toate drepturile rezervate.
           </p>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-100/70 dark:bg-neutral-900/60 border border-neutral-200/60 mx-auto sm:mx-0">
-            <span className="text-xs text-neutral-600 dark:text-neutral-400">
-              Powered by
-            </span>
+            <span className="text-xs text-neutral-600 dark:text-neutral-400">Powered by</span>
             <LinkPreview
               url="https://www.nextdev.ro/"
-              isStatic={true} // ← asta
-              imageSrc="/preview-nextdev.png" // ← și asta (vezi pasul 2)
-              className="text-xs sm:text-sm font-bold  text-[#2d9b92]"
+              isStatic={true}
+              imageSrc="/preview-nextdev.png"
+              className="text-xs sm:text-sm font-bold text-[#2d9b92]"
             >
               NextDev
             </LinkPreview>

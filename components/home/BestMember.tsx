@@ -1,12 +1,12 @@
 "use client";
 
-import  { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { useOutsideClick } from "@/hooks/use-outside-click";
+import { useOutsideClick } from "@/lib/hooks/use-outside-click";
 
 export default function ExpandableCardDemo() {
   const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(
-    null
+    null,
   );
   const ref = useRef<HTMLDivElement>(null!);
   const id = useId();
@@ -81,19 +81,17 @@ export default function ExpandableCardDemo() {
               </motion.div>
 
               <div className="flex-1 overflow-y-auto flex flex-col">
-         <div className="pl-4">
-  <motion.h3
-    layoutId={`title-${active.title}-${id}`}
-    className="font-bold text-neutral-700 dark:text-neutral-200 text-xl mt-2"
-  >
-    {active.title}
-  </motion.h3>
-  <motion.p
-    className="text-neutral-600 dark:text-neutral-400 text-sm"
-  >
-    Owner SummitSphere
-  </motion.p>
-</div>
+                <div className="pl-4">
+                  <motion.h3
+                    layoutId={`title-${active.title}-${id}`}
+                    className="font-bold text-neutral-700 dark:text-neutral-200 text-xl mt-2"
+                  >
+                    {active.title}
+                  </motion.h3>
+                  <motion.p className="text-neutral-600 dark:text-neutral-400 text-sm">
+                    viziunea din spatele SummitSphere
+                  </motion.p>
+                </div>
 
                 <div className="pt-4 relative px-4 flex-1 overflow-y-auto">
                   <motion.div
@@ -119,41 +117,42 @@ export default function ExpandableCardDemo() {
             layoutId={`card-${card.title}-${id}`}
             key={`card-${card.title}-${id}`}
             onClick={() => setActive(card)}
-        className="p-8 flex flex-col md:flex-row justify-between items-start hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer gap-6 min-h-[200px]"
+            className="p-8 flex flex-col md:flex-row justify-between items-start hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer gap-6 min-h-[200px]"
           >
-    <div className="flex gap-4 flex-col md:flex-row w-full md:w-auto">
-<motion.div layoutId={`image-${card.title}-${id}`} className="flex-shrink-0 w-full md:w-auto flex justify-center md:justify-start">
-  <img
-    width={120}
-    height={120}
-    src={card.src}
-    alt={card.title}
-    className="h-32 w-32 md:h-28 md:w-28 rounded-lg object-cover object-top"
-  />
-</motion.div>
+            <div className="flex gap-4 flex-col md:flex-row w-full md:w-auto">
+              <motion.div
+                layoutId={`image-${card.title}-${id}`}
+                className="flex-shrink-0 w-full md:w-auto flex justify-center md:justify-start"
+              >
+                <img
+                  width={120}
+                  height={120}
+                  src={card.src}
+                  alt={card.title}
+                  className="h-32 w-32 md:h-28 md:w-28 rounded-lg object-cover object-top"
+                />
+              </motion.div>
 
-  <div className="flex-1">
-    <div className="flex gap-2 items-baseline">
-      <motion.h3
-        layoutId={`title-${card.title}-${id}`}
-        className="font-bold text-lg text-neutral-800 dark:text-neutral-200"
-      >
-        {card.title}
-      </motion.h3>
-      <motion.p
-        className="text-neutral-600 dark:text-neutral-400 text-xs"
-      >
-        Owner SummitSphere
-      </motion.p>
-    </div>
-    <motion.p
-      layoutId={`description-${card.description}-${id}`}
-      className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed mt-2 text-justify"
-    >
-      {card.description}
-    </motion.p>
-  </div>
-</div>
+              <div className="flex-1">
+                <div className="flex gap-2 items-baseline">
+                  <motion.h3
+                    layoutId={`title-${card.title}-${id}`}
+                    className="font-bold text-xl text-neutral-800 dark:text-neutral-200"
+                  >
+                    {card.title}
+                  </motion.h3>
+                  <motion.p className="text-neutral-600 dark:text-neutral-400 text-sm">
+                    viziunea din spatele SummitSphere
+                  </motion.p>
+                </div>
+                <motion.p
+                  layoutId={`description-${card.description}-${id}`}
+                  className="text-neutral-600 dark:text-neutral-400 text-lg leading-relaxed mt-2 text-justify"
+                >
+                  {card.description}
+                </motion.p>
+              </div>
+            </div>
           </motion.div>
         ))}
       </ul>
@@ -196,34 +195,91 @@ export const CloseIcon = () => {
 
 const cards = [
   {
-    description: "Mă bucur să pot contribui la construirea unor evenimente care nu doar informează, ci și inspiră, ajutându-i pe ceilalți să evolueze și să ajungă la potențialul lor maxim.",
+    description:
+      "Mă bucur să pot contribui la construirea unor evenimente care nu doar informează, ci și inspiră, ajutându-i pe ceilalți să evolueze și să ajungă la potențialul lor maxim.",
     title: "Miruna",
     src: "/images/Miruna.png",
 
-
     content: () => {
       return (
-       <>
-          <p>
-            Cred cu tărie că fiecare idee bună merită să devină realitate, iar misiunea mea este să aduc oamenii împreună, să creez oportunități pentru ei și să sprijin progresul lor, atât pe plan profesional, cât și personal.
-          </p>
-          <p>
-            Sunt convinsă că fiecare eveniment pe care îl organizăm este o oportunitate de a face o diferență și de a ajuta la creșterea și dezvoltarea continuă a celor care activează în domeniul medical. În final, ceea ce mă motivează este să știu că am contribuit, chiar și cu un mic pas, la evoluția celor din jurul meu.</p>
-               <p>
-            Cred cu tărie că fiecare idee bună merită să devină realitate, iar misiunea mea este să aduc oamenii împreună, să creez oportunități pentru ei și să sprijin progresul lor, atât pe plan profesional, cât și personal.
-          </p>
-          <p>
-            "Am crescut cu visul că, indiferent cât de mic aș fi, pot schimba lumea din jurul meu. Am fost un copil care a crezut în puterea ideilor, în valoarea oamenilor și în forța de a merge mereu mai departe.
-          </p>
-          <p>
-            Astăzi, acel copil trăiește mai departe în mine. Prin SummitSphere, transform fiecare eveniment într-o oportunitate reală de evoluție, de întâlnire, de inspirație. Cred că adevărata reușită nu stă în cifre sau aplauze, ci în modul în care reușim să luminăm drumul celorlalți, să îi ajutăm să creadă mai mult în ei, să crească, să viseze mai departe.
-          </p>
-          <p>
-            Pentru mine, fiecare conferință organizată, fiecare zâmbet sincer văzut într-o sală, fiecare idee schimbată între oameni este o promisiune ținută față de acel copil din mine care a visat că poate construi ceva ce rămâne."
-          </p>
-       
-        </>
+        <div className="text-neutral-600 dark:text-neutral-400 text-sm md:text-base flex flex-col gap-6">
+          {/* Intro Section */}
+          <div className="space-y-4">
+            <p className="font-semibold text-neutral-800 dark:text-white text-lg">
+              Construim experiențe care conectează oamenii și susțin progresul medical.
+            </p>
+            <p>
+              SummitSphere a fost creată din convingerea că progresul real începe atunci când oamenii se întâlnesc, schimbă idei și construiesc împreună. Misiunea mea este să aduc profesioniștii din domeniul medical mai aproape unii de alții, să creez contexte în care colaborarea devine naturală și să transform fiecare eveniment într-o experiență cu impact real.
+            </p>
+            <p>
+              Cred cu tărie că fiecare idee valoroasă merită să prindă formă și că rolul nostru este să creăm spațiul în care aceasta poate deveni realitate.
+            </p>
+          </div>
 
+          {/* Personal Background Section */}
+          <div className="space-y-4">
+            <p>
+              Încă din copilărie am crezut în puterea ideilor și în valoarea oamenilor. Am crescut cu convingerea că, indiferent cât de mic pare un pas, el poate contribui la schimbări reale în jurul nostru.
+            </p>
+            <p>
+              Acea credință a rămas parte din mine. Astăzi, prin SummitSphere, o transform în acțiune — construind evenimente care nu sunt doar organizate, ci gândite ca oportunități autentice de întâlnire, de inspirație și de evoluție profesională.
+            </p>
+            <p>
+              Activitatea mea este orientată către dezvoltarea și coordonarea proiectelor din domeniul medical, cu accent pe organizarea de evenimente științifice, experiența participanților și crearea unor contexte relevante de dialog profesional.
+            </p>
+          </div>
+
+          {/* Principles List */}
+          <div className="bg-neutral-50 dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+            <p className="font-bold text-neutral-800 dark:text-white mb-3">Fiecare proiect este construit pe principii clare:</p>
+            <ul className="list-none space-y-2">
+              {["profesionalism", "rigoare organizațională", "atenție la detalii", "respect pentru comunitatea medicală", "orientare reală către impact"].map((item, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#2D9A8F]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p>
+            Pentru mine, organizarea unui eveniment nu înseamnă doar logistică — înseamnă responsabilitatea de a crea un spațiu în care oamenii pot crește, învăța și colabora.
+          </p>
+
+          <p>
+            Cred că progresul în sănătate nu se construiește doar prin informație, ci prin conexiuni autentice între oameni. SummitSphere există pentru a facilita these conexiuni și pentru a transforma fiecare întâlnire profesională într-o experiență care generează valoare pe termen lung.
+          </p>
+
+          <p>
+            Fiecare eveniment este o oportunitate de a face o diferență — de a susține evoluția profesională, de a inspira idei noi și de a contribui, chiar și prin pași mici, la dezvoltarea comunității medicale.
+          </p>
+
+          {/* Values List */}
+          <div className="bg-neutral-50 dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+            <p className="font-bold text-neutral-800 dark:text-white mb-3">Valorile care ne ghidează:</p>
+            <ul className="list-none space-y-2">
+              {["profesionalism fără compromis", "respect pentru oameni și cunoaștere", "excelență organizațională", "colaborare autentică", "experiențe care rămân"].map((item, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#2D9A8F]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Closing Section */}
+          <div className="space-y-4 pt-4">
+            <p>
+              Pentru mine, adevărata reușită nu se măsoară în cifre sau aplauze, ci în impactul pe care îl avem asupra oamenilor.
+            </p>
+            <p>
+              Fiecare conferință organizată, fiecare dialog facilitat și fiecare experiență creată reprezintă o promisiune împlinită — aceea de a contribui la evoluția celor din jur și de a construi ceva care rămâne.
+            </p>
+            <p className="font-medium text-[#2D9A8F] pt-2">
+              Dacă îți dorești să dezvoltăm un proiect sau să organizăm un eveniment care creează impact real, te invit să intrăm în dialog.
+            </p>
+          </div>
+        </div>
       );
     },
   },

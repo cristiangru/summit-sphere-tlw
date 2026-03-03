@@ -9,10 +9,10 @@ export default function HeroScrollDemo() {
         titleComponent={
           <div className="mb-2 sm:mb-20 px-4"> 
  <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-black dark:text-white leading-[1.2] sm:leading-tight">
-  Conectăm oameni <br className="hidden sm:block" />
+ Unele experiențe se trăiesc.  <br className="hidden sm:block" />
   <span className="text-2xl sm:text-5xl font-bold mt-4 block text-black dark:text-white leading-[1.4] sm:leading-tight">
-    Inspirăm soluții pentru un <br className="block sm:hidden" /> 
-    viitor mai <span className="text-[#2D9A8F] inline-block mt-1 sm:mt-0">sănătos</span>
+Cele importante se țin minte. <br className="block sm:hidden" /> 
+     <span className="text-[#2D9A8F] inline-block mt-1 sm:mt-0">Noi le creăm</span>
   </span>
 </h1>
           </div>
@@ -20,7 +20,7 @@ export default function HeroScrollDemo() {
       >
         <div className="w-full h-full flex items-center justify-center">
           <Image
-            src="/images/6.png"
+            src="/images/compare/c3.png"
             alt="hero"
             width={1200}
             height={720}

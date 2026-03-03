@@ -1,10 +1,9 @@
-
-import  SectionWrapper  from "@/components/SectionWrapper";
+import SectionWrapper from "@/components/SectionWrapper";
 import Services from "@/components/home/Services";
 import HeroScroll from "@/components/home/HeroScroll";
 import SectionTitle from "@/components/TextSection";
 import Excelenta from "@/components/home/Excelenta";
-// import Cta from "@/components/home/Cta";
+import Testimonial from "@/components/home/Testimonial";
 import BestMember from "@/components/home/BestMember";
 import OurValue from "@/components/home/OurValue";
 import FQA from "@/components/home/FQA";
@@ -13,68 +12,63 @@ import RecentArticles from "@/components/home/RecentArticles";
 export default function Home() {
   return (
     <main>
-
-
       <SectionWrapper fullWidth>
         <HeroScroll />
       </SectionWrapper>
 
-
       <SectionWrapper>
-<SectionTitle text="Serviciile noastre" highlight="noastre" />
+        <SectionTitle text="Serviciile noastre" highlight="noastre" />
       </SectionWrapper>
 
       <SectionWrapper>
         <Services />
       </SectionWrapper>
 
- 
-<SectionTitle text="Valorile noastre" highlight="noastre" />
+      <SectionTitle text="Valorile noastre" highlight="noastre" />
 
-   <SectionWrapper fullWidth>
+      <SectionWrapper fullWidth>
         <OurValue />
-              </SectionWrapper>
-
-                   
-                   
-                   
-                   <SectionWrapper>
-
- 
-<SectionTitle text="Excelență medicală" highlight="medicală" />
       </SectionWrapper>
-         <SectionWrapper fullWidth>
+
+      <SectionWrapper>
+        <SectionTitle text="Excelență medicală" highlight="medicală" />
+      </SectionWrapper>
+      <SectionWrapper fullWidth>
         <Excelenta />
-      </SectionWrapper> 
-
-
-
-   <SectionWrapper>
-<SectionTitle text="Best team member" highlight="member" />
-      </SectionWrapper>
-         <SectionWrapper fullWidth>
-        <BestMember />
       </SectionWrapper>
 
+{/* 
+            <SectionWrapper>
+        <SectionTitle text="Ce spun partenerii noștri" highlight="noștri" />
+      </SectionWrapper> */}
+
+  
 
 
       <SectionWrapper>
-<SectionTitle text="Articolele noastre" highlight="noastre" />
+        <SectionTitle text="Best team member" highlight="member" />
       </SectionWrapper>
-          <SectionWrapper>
+      <SectionWrapper fullWidth>
+        <BestMember />
+      </SectionWrapper>
+
+          <SectionWrapper fullWidth>
+        <Testimonial />
+      </SectionWrapper>
+
+      <SectionWrapper>
+        <SectionTitle text="Articolele noastre" highlight="noastre" />
+      </SectionWrapper>
+      <SectionWrapper>
         <RecentArticles />
-              </SectionWrapper>
-
-
-
-                    <SectionWrapper>
-<SectionTitle text="Întrebări frecvente" highlight="frecvente" />
       </SectionWrapper>
-<SectionWrapper fullWidth>
-  <FQA />
-</SectionWrapper>
 
-
+      <SectionWrapper>
+        <SectionTitle text="Întrebări frecvente" highlight="frecvente" />
+      </SectionWrapper>
+      <SectionWrapper fullWidth>
+        <FQA />
+      </SectionWrapper>
     </main>
   );
 }

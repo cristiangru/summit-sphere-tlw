@@ -4,8 +4,7 @@ import Image from "next/image";
 import { getArticleBySlug, getAllArticles } from "@/lib/articles";
 import { TracingBeam } from "@/components/ui/tracing-beam";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 
 interface BlogDetailPageProps {
   params: Promise<{
