@@ -101,6 +101,13 @@ export default function EventForm({
     if (watchedIban && watchedIban.length > 0) trigger("banca");
   }, [watchedIban, trigger]);
 
+
+useEffect(() => {
+  if (isSuccess) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}, [isSuccess]);
+
   const handleNext = async () => {
     let fields: any[] = [];
     if (step === 1) fields = ["tipParticipant"];
@@ -787,7 +794,7 @@ function SuccessView({ onReset }: { onReset: () => void }) {
         </h2>
         
         <p className="text-slate-500 dark:text-slate-400 mb-10 font-medium text-sm leading-relaxed px-6">
-          Te-ai înscris cu succes la SummitSphere. Tocmai ți-am trimis un mail cu toate detaliile logistice.
+          Te-ai înscris cu succes la eveniment. 
         </p>
 
         <div className="space-y-4">

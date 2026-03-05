@@ -1,7 +1,8 @@
 // src/server/actions/notifications.ts (UPDATED - Actually works!)
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/server";
 
 /**
  * ============================================
@@ -24,7 +25,9 @@ interface NotificationData {
  */
 export async function notifyAdminNewRegistration(data: NotificationData) {
   try {
-    const supabase = await createClient();
+   
+
+   const supabase = createAdminClient();
 
     // ✅ Create notification record in database
     const { error } = await supabase.from("admin_notifications").insert({
@@ -44,9 +47,6 @@ export async function notifyAdminNewRegistration(data: NotificationData) {
       return { success: false, error: error.message };
     }
 
-    console.log(
-      `[NOTIFICATION] New registration: ${data.participantName} at ${data.eventTitle}`
-    );
 
     return { success: true };
   } catch (error) {
@@ -60,7 +60,10 @@ export async function notifyAdminNewRegistration(data: NotificationData) {
  */
 export async function getAdminNotifications() {
   try {
-    const supabase = await createClient();
+
+     await requireAdmin();
+     
+const supabase = createAdminClient();
 
     // ✅ Fetch unread notifications (last 10)
     const { data, error } = await supabase
@@ -87,7 +90,7 @@ export async function getAdminNotifications() {
  */
 export async function markNotificationAsRead(notificationId: string) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     const { error } = await supabase
       .from("admin_notifications")
@@ -108,7 +111,7 @@ export async function markNotificationAsRead(notificationId: string) {
  */
 export async function deleteNotification(notificationId: string) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     const { error } = await supabase
       .from("admin_notifications")
@@ -129,7 +132,7 @@ export async function deleteNotification(notificationId: string) {
  */
 export async function clearAllNotifications() {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     const { error } = await supabase
       .from("admin_notifications")

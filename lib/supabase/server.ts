@@ -1,29 +1,33 @@
 // src/lib/supabase/server.ts
-import { createServerClient, serialize } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { env } from '@/lib/env';
+//
+// Client Supabase pentru server-side (server actions, route handlers).
+// Folosește SERVICE_ROLE key → bypass complet RLS → doar pe server.
+//
+// NU importa în componente "use client".
+// NU expune SUPABASE_SERVICE_ROLE_KEY în browser (nu are prefix NEXT_PUBLIC_).
+//
+// De ce nu mai folosim createServerClient cu cookies?
+// → Acel pattern e pentru Supabase Auth (sesiuni în cookies).
+// → Noi folosim Clerk pentru auth → nu există sesiune Supabase în cookies.
+// → Tot ce facem server-side merge cu service_role direct.
 
-export async function createClient() {
-  const cookieStore = await cookies();
+import { createClient } from "@supabase/supabase-js";
 
-  return createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {
-            // Handle errors when setting cookies
-          }
-        },
-      },
-    }
-  );
+export function createAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    throw new Error(
+      "[Supabase] Lipsesc variabilele de mediu: NEXT_PUBLIC_SUPABASE_URL sau SUPABASE_SERVICE_ROLE_KEY"
+    );
+  }
+
+  return createClient(url, key, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+  });
 }

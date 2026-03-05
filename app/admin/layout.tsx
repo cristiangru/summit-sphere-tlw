@@ -1,20 +1,15 @@
 // src/app/admin/layout.tsx
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import SidebarDemo from "@/components/admin/Sidebar";
 import AdminLayoutClient from "./AdminLayoutClient";
 import { AdminNotificationToast } from "@/components/admin/AdminNotificationToast";
-
-// ✅ Scos: AdminNotificationProvider, AdminNotificationContext
-// Toast-ul citește direct din React Query — nu mai e nevoie de context
+import { requireAdmin } from "@/lib/auth";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  await requireAdmin();
 
   return (
     <AdminLayoutClient>
@@ -26,8 +21,6 @@ export default async function AdminLayout({
           </div>
         </main>
       </div>
-
-      {/* ✅ Toast standalone — nu depinde de niciun context */}
       <AdminNotificationToast />
     </AdminLayoutClient>
   );

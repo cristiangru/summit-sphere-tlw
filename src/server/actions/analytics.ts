@@ -1,7 +1,7 @@
 // src/server/actions/analytics.ts (NEW - Dashboard analytics)
 "use server";
+import { createAdminClient } from "@/lib/supabase/server";
 
-import { createClient } from "@/lib/supabase/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth";
 
@@ -263,7 +263,8 @@ export async function getEventAnalytics(eventId: string): Promise<{
     // ✅ Require admin
     await requireAdmin();
 
-    const supabase = await createClient();
+   const supabase = createAdminClient();
+
 
     // ✅ Fetch event with participants
     const { data: event, error: eventError } = await supabase

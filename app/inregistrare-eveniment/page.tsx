@@ -5,7 +5,7 @@ export default function InregistrarePage() {
   return (
     <>
       <SectionWrapper>
-<EventForm eventId="b4ec465d-5b50-445e-b146-177670ae4261" />
+<EventForm eventId="2bd79c7b-86bb-459c-9af8-a3576ee7dcb1" />
       </SectionWrapper>
     </>
   );

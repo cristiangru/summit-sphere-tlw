@@ -440,13 +440,13 @@ function DesktopRow({ event, onView, onDelete, formatDate, notificationCount, is
           >
             <Eye size={16} />
           </button>
-          <button 
+          {/* <button 
             onClick={() => onDelete(event.id, event.title)}
             disabled={isDeleting}
             className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-red-600 rounded-xl hover:bg-red-500 hover:text-white hover:border-red-500 disabled:opacity-50 transition-all shadow-sm"
           >
             {isDeleting ? <Clock size={16} className="animate-spin" /> : <Trash2 size={16} />}
-          </button>
+          </button> */}
         </div>
       </td>
     </tr>

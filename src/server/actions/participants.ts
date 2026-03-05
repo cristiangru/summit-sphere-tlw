@@ -3,9 +3,7 @@
 
 import { z } from "zod";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { createClient as createServiceClient } from "@supabase/supabase-js";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/server";
 import { participantRegistrationSchema } from "@/lib/validations/index";
 import { logAudit } from "@/lib/audit";
 import { requireAdmin, checkAdminRateLimit, getClientIP } from "@/lib/auth";
@@ -36,23 +34,6 @@ const updateStatusSchema = z.object({
 // ✅ Reuse across all requests
 // ✅ Faster: No recreation overhead
 
-let cachedServiceClient: SupabaseClient | null = null;
-
-function getServiceClient(): SupabaseClient {
-  if (!cachedServiceClient) {
-    cachedServiceClient = createServiceClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      }
-    );
-  }
-  return cachedServiceClient;
-}
 
 // ============================================
 // REDIS + RATE LIMITING
@@ -93,7 +74,7 @@ async function fetchParticipants(
   }
   cacheLife("minutes"); // 1 minute default
 
-  const supabase = getServiceClient();
+const supabase = createAdminClient();
 
   // ✅ Validate pagination
   const safePage =
@@ -211,8 +192,7 @@ export async function submitParticipantRegistration(formData: unknown) {
     if (!recaptchaData.success || recaptchaData.score < 0.5) {
       return { success: false, error: "Verificare bot eșuată" };
     }
-
-    const supabase = await createClient();
+const supabase = createAdminClient();
 
     // ✅ Check for duplicate
     const { data: existing } = await supabase
@@ -380,7 +360,7 @@ export async function updateParticipantStatus(
       reason,
     });
 
-    const supabase = await createClient();
+const supabase = createAdminClient();
 
     // ✅ Fetch participant
     const { data: participant, error: selectError } = await supabase
@@ -469,7 +449,7 @@ export async function deleteParticipant(
       eventId,
     });
 
-    const supabase = await createClient();
+const supabase = createAdminClient();
 
     // ✅ Fetch participant
     const { data: participant, error: selectError } = await supabase
@@ -539,7 +519,7 @@ export async function exportParticipants(eventId: string) {
       throw new Error("ID eveniment invalid");
     }
 
-    const supabase = await createClient();
+   const supabase = createAdminClient();
 
     // ✅ Fetch participants
     const { data, error } = await supabase
@@ -583,7 +563,7 @@ export async function getAuditLogs(filters?: any) {
       throw new Error("Pra multea acțiuni. Reîncearcă mai târziu.");
     }
 
-    const supabase = await createClient();
+const supabase = createAdminClient();
 
     // ✅ Fetch audit logs (lightweight: fără count exact, limit rezonabil)
     const { data, error } = await supabase

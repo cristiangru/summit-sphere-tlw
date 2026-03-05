@@ -3,13 +3,10 @@
 
 import { z } from "zod";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { createClient as createServiceClient } from "@supabase/supabase-js";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/server";
 import { createEventSchema, updateEventSchema } from "@/lib/validations";
 import { requireAdmin, checkAdminRateLimit, getClientIP } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
-import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
 // ============================================
@@ -19,23 +16,6 @@ import { Redis } from "@upstash/redis";
 // ✅ Reuse across all requests
 // ✅ Faster: No recreation overhead
 
-let cachedServiceClient: SupabaseClient | null = null;
-
-function getServiceClient(): SupabaseClient {
-  if (!cachedServiceClient) {
-    cachedServiceClient = createServiceClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      }
-    );
-  }
-  return cachedServiceClient;
-}
 
 // ============================================
 // REDIS + RATE LIMITING
@@ -61,7 +41,8 @@ async function fetchEventsWithStats() {
   cacheTag("events");
   cacheLife("minutes"); // 1 minute default, revalidate on background
 
-  const supabase = getServiceClient();
+const supabase = createAdminClient();
+
 
   const { data: rawEvents, error } = await supabase.rpc(
     "get_events_with_stats_summary"
@@ -126,7 +107,8 @@ export async function getEventsWithStats() {
 
 export async function getEvents(filters?: { status?: string; page?: number }) {
   try {
-    const supabase = await createClient();
+ const supabase = createAdminClient();
+
     const page = filters?.page ?? 1;
     const pageSize = 10;
     const offset = (page - 1) * pageSize;
@@ -168,7 +150,8 @@ export async function getEventById(eventId: string) {
       throw new Error("ID eveniment invalid");
     }
 
-    const supabase = await createClient();
+const supabase = createAdminClient();
+
     const { data, error } = await supabase
       .from("events")
       .select("*")
@@ -197,7 +180,8 @@ export async function createEvent(formData: unknown) {
     // ✅ Validate early
     const validated = createEventSchema.parse(formData);
     const ip = await getClientIP();
-    const supabase = await createClient();
+const supabase = createAdminClient();
+
 
     // ✅ Insert event
     const { data: event, error } = await supabase
@@ -279,7 +263,8 @@ export async function updateEvent(eventId: string, formData: unknown) {
     });
 
     const ip = await getClientIP();
-    const supabase = await createClient();
+const supabase = createAdminClient();
+
 
     // ✅ Fetch old event for audit
     const { data: oldEvent, error: selectError } = await supabase
@@ -376,7 +361,8 @@ export async function deleteEvent(eventId: string) {
     }
 
     const ip = await getClientIP();
-const supabase = getServiceClient();
+const supabase = createAdminClient();
+
 
 
     // ✅ Fetch event
@@ -477,7 +463,8 @@ export async function changeEventStatus(
     }
 
     const ip = await getClientIP();
-   const supabase = getServiceClient();
+const supabase = createAdminClient();
+
 
 
     // ✅ Fetch event

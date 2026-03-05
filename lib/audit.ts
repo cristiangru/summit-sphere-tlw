@@ -5,7 +5,8 @@
  * ✅ NOW SAVES TO SUPABASE!
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
+
 
 export interface AuditLog {
   action: string; // e.g., "PARTICIPANT_CONFIRMED", "CSV_EXPORTED"
@@ -64,7 +65,8 @@ export async function logAudit({
 
   // 2. ✅ SAVE TO SUPABASE
   try {
-    const supabase = await createClient();
+   const supabase = createAdminClient();
+
     
     const { error } = await supabase
       .from("audit_logs")

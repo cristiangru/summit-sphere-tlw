@@ -8,6 +8,7 @@ import { logAudit } from "@/lib/audit";
 import { headers } from "next/headers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { createAdminClient } from "@/lib/supabase/server";
 
 /**
  * ============================================
@@ -119,41 +120,42 @@ export async function checkAdminRateLimit(userId: string): Promise<boolean> {
  */
 
 export async function requireAdmin(): Promise<CurrentUser> {
-  // ✅ Get auth from Clerk (cached in-memory)
   const { userId, sessionClaims } = await auth();
+  if (!userId) redirect("/sign-in");
 
-  if (!userId) {
-    redirect("/sign-in");
-  }
-
-  // ✅ Extract email from claims safely
   const userEmail = ((sessionClaims?.email as string) || "").trim();
-
-  if (!userEmail) {
-    throw new Error("User email not found in session");
-  }
-
-  // ✅ Check if user is admin (using cached admin list)
+  
+  // 1. PRIMA BARIERĂ: Verificarea în .env (Whitelist-ul tău fix)
   const adminEmails = getAdminEmails();
-  const isAdmin = adminEmails.includes(userEmail);
+  const isInEnv = adminEmails.includes(userEmail);
 
-  // ✅ Not admin - log and redirect
-  if (!isAdmin) {
+  // 2. A DOUA BARIERĂ: Verificarea în Supabase (Baza de date)
+  // Folosim createAdminClient (cel cu service_role) creat anterior
+  const supabase = createAdminClient();
+  const { data: adminInDb } = await supabase
+    .from('admin_users')
+    .select('is_admin')
+    .eq('user_id', userId)
+    .single();
+
+  const isStrictAdmin = isInEnv && adminInDb?.is_admin === true;
+
+  // Dacă una din condiții pică, accesul e interzis
+  if (!isStrictAdmin) {
     const ip = await getClientIP();
-
-    // 🚀 Fire & forget - doesn't block the redirect
-    logAudit({
+    
+    await logAudit({
       action: "UNAUTHORIZED_ADMIN_ACCESS",
       userId,
       userEmail,
       resource: "admin",
-      resourceId: "N/A",
-      details: {
-        ip,
-        reason: "User not in admin whitelist",
+      details: { 
+        ip, 
+        reason: !isInEnv ? "Not in ENV" : "Not in Supabase DB",
+        attemptedEmail: userEmail 
       },
       severity: "error",
-    }).catch((err) => console.error("[AUDIT] Silent fail:", err));
+    }).catch(console.error);
 
     redirect("/");
   }
