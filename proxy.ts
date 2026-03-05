@@ -16,6 +16,8 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)", "/sign-up(.*)", "/api/health"
 ]);
 
+// Adăugăm un matcher specific pentru rutele de autentificare
+const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
 const isAdminRoute = createRouteMatcher(["/admin(.*)", "/dashboard(.*)"]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
 
@@ -27,11 +29,10 @@ const redis = new Redis({
 
 const publicLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(100, "1 m"),
+  limiter: Ratelimit.slidingWindow(150, "1 m"), // Am crescut puțin limita publică
   prefix: "mw_public",
 });
 
-// Admin limiter mai permisiv pentru sesiuni legitime care fac multe fetch-uri
 const adminLimiter = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(500, "1 m"),
@@ -66,11 +67,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return new NextResponse("Potential attack detected", { status: 400 });
   }
 
-  // 2. IDENTITATE: Obținem datele despre utilizator prima dată
+  // 2. IDENTITATE
   const authObj = await auth();
   const userEmail = (authObj.sessionClaims?.email as string || "").toLowerCase();
   
-  // Parsing ADMIN_EMAILS consistent cu env.ts
   const adminEmails = (process.env.ADMIN_EMAILS || "")
     .split(",")
     .map(e => e.trim().toLowerCase())
@@ -78,25 +78,25 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
   const isVerifiedAdmin = userEmail && adminEmails.includes(userEmail);
   const isAdminPath = isAdminRoute(req);
-  const isPublicPath = isPublicRoute(req);
+  const isAuthPath = isAuthRoute(req);
 
-  // 3. RATE LIMITING: Aplicăm DOAR dacă nu este un admin verificat
-  // Asta previne blocarea adminului pe pagini cu multe cereri (Participants, Logs)
-  if (!isVerifiedAdmin) {
+  // 3. RATE LIMITING LOGIC REPARATĂ
+  // NU limităm dacă: este Admin Verificat SAU este pagină de Login/Register
+  if (!isVerifiedAdmin && !isAuthPath) {
     const limiter = isAdminPath ? adminLimiter : publicLimiter;
     const { success } = await limiter.limit(ip);
     
     if (!success) {
       console.warn(`[SECURITY] Rate limit exceeded from ${ip} on ${pathname}`);
-      // Returnăm HTML pentru pagini și JSON pentru API
       if (isApiRoute(req)) {
         return NextResponse.json({ error: "Too many requests" }, { status: 429 });
       }
-      return new NextResponse("Prea multe cereri. Reveniți în curând.", { status: 429 });
+      // Mesaj mai prietenos pentru utilizatori
+      return new NextResponse("Prea multe cereri. Reveniți în câteva minute.", { status: 429 });
     }
   }
 
-  // 4. AUTORIZARE: Verificăm accesul la rutele de Admin
+  // 4. AUTORIZARE ADMIN
   if (isAdminPath) {
     if (!authObj.userId) {
       return authObj.redirectToSignIn();
@@ -110,7 +110,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     // Session Timeout Check
     const lastActive = req.cookies.get("last_admin_activity")?.value;
     if (lastActive && (now - parseInt(lastActive, 10) > SESSION_TIMEOUT)) {
-      console.log(`[SECURITY] Session expired for ${userEmail}`);
       const res = NextResponse.redirect(new URL("/sign-in", req.url));
       res.cookies.delete("__session");
       res.cookies.delete("last_admin_activity");
@@ -118,12 +117,12 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
   }
 
-  // 5. CSRF Validation
+  // 5. CSRF Validation (excludem GET)
   if (!validateCsrf(req)) {
     return NextResponse.json({ error: "Invalid Origin" }, { status: 403 });
   }
 
-  // 6. RESPONSE FINAL & SECURITY HEADERS
+  // 6. RESPONSE FINAL
   const response = NextResponse.next();
 
   if (isVerifiedAdmin && isAdminPath) {
@@ -134,7 +133,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       path: "/",
       maxAge: SESSION_TIMEOUT / 1000,
     });
-    // Prevenim caching-ul paginilor de admin
     response.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
   }
 
