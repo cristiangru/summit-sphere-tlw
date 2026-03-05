@@ -6,31 +6,20 @@ import { addSecurityHeaders as applyUltraSecurity } from "@/lib/securityHeaders"
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// ─── SESSION TIMEOUT (2 ore) ──────────────────────────────────────────────────
-const SESSION_TIMEOUT = 2 * 60 * 60 * 1000;
+// ─── CONFIGURARE ──────────────────────────────────────────────────────────────
+const SESSION_TIMEOUT = 2 * 60 * 60 * 1000; // 2 ore
 
-// ─── ROUTE MATCHERS ───────────────────────────────────────────────────────────
 const isPublicRoute = createRouteMatcher([
-  "/",
-  "/despre-noi",
-  "/servicii(.*)",
-  "/parteneri",
-  "/portofoliu",
-  "/blog(.*)",
-  "/contact",
-  "/termeni-si-conditii",
-  "/politica-de-cookies",
-  "/politica-de-confidentialitate",
-  "/inregistrare-eveniment",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/health",
+  "/", "/despre-noi", "/servicii(.*)", "/parteneri", "/portofoliu",
+  "/blog(.*)", "/contact", "/termeni-si-conditii", "/politica-de-cookies",
+  "/politica-de-confidentialitate", "/inregistrare-eveniment",
+  "/sign-in(.*)", "/sign-up(.*)", "/api/health"
 ]);
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)", "/dashboard(.*)"]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
 
-// ─── RATE LIMITING cu Upstash Redis (funcționează pe Vercel/serverless) ───────
+// ─── RATE LIMITING (Upstash Redis) ───────────────────────────────────────────
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
@@ -42,27 +31,23 @@ const publicLimiter = new Ratelimit({
   prefix: "mw_public",
 });
 
+// Admin limiter mai permisiv pentru sesiuni legitime care fac multe fetch-uri
 const adminLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(200, "1 m"),
+  limiter: Ratelimit.slidingWindow(500, "1 m"),
   prefix: "mw_admin",
 });
 
-// ─── SESSION TIMEOUT CHECK ────────────────────────────────────────────────────
-function checkSessionTimeout(lastActive: string | undefined, now: number): boolean {
-  if (!lastActive) return true;
-  return now - parseInt(lastActive, 10) <= SESSION_TIMEOUT;
+// ─── HELPER FUNCTIONS ─────────────────────────────────────────────────────────
+function getClientIp(req: NextRequest): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
 }
 
-// ─── CSRF VALIDATION ──────────────────────────────────────────────────────────
 function validateCsrf(req: NextRequest): boolean {
-  if (!["POST", "PUT", "DELETE", "PATCH"].includes(req.method)) return true;
-
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return true;
   const host = req.headers.get("host");
   const origin = req.headers.get("origin");
-
   if (!origin || !host) return false;
-
   try {
     return new URL(origin).host === host;
   } catch {
@@ -74,61 +59,58 @@ function validateCsrf(req: NextRequest): boolean {
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { pathname } = req.nextUrl;
   const now = Date.now();
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = getClientIp(req);
 
-  // SECURITY 1: Path Traversal
+  // 1. SECURITY: Path Traversal prevention
   if (pathname.includes("..") || pathname.includes("//")) {
-    console.warn(`[SECURITY] Path traversal attempt from ${ip}: ${pathname}`);
-    return new NextResponse("Blocked", { status: 400 });
+    return new NextResponse("Potential attack detected", { status: 400 });
   }
 
-  const isAdmin = isAdminRoute(req);
-  const isPublic = isPublicRoute(req);
-  const isApi = isApiRoute(req);
-
-  // SECURITY 2: Rate Limiting distribuită (Redis — funcționează pe orice instanță)
-  const limiter = isAdmin ? adminLimiter : publicLimiter;
-  const { success: withinLimit } = await limiter.limit(ip);
-  if (!withinLimit) {
-    console.warn(`[SECURITY] Rate limit exceeded from ${ip}`);
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-  }
-
-  // ROUTE 1: Public — ieșire rapidă
-  if (isPublic) {
-    const res = NextResponse.next();
-    return applyUltraSecurity(res, {
-      development: process.env.NODE_ENV === "development",
-    });
-  }
-
-  // ROUTE 2: Autentificare
+  // 2. IDENTITATE: Obținem datele despre utilizator prima dată
   const authObj = await auth();
-  const userId = authObj.userId;
+  const userEmail = (authObj.sessionClaims?.email as string || "").toLowerCase();
+  
+  // Parsing ADMIN_EMAILS consistent cu env.ts
+  const adminEmails = (process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map(e => e.trim().toLowerCase())
+    .filter(e => e.length > 0);
 
-  if (!userId) {
-    if (isApi) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    return authObj.redirectToSignIn();
+  const isVerifiedAdmin = userEmail && adminEmails.includes(userEmail);
+  const isAdminPath = isAdminRoute(req);
+  const isPublicPath = isPublicRoute(req);
+
+  // 3. RATE LIMITING: Aplicăm DOAR dacă nu este un admin verificat
+  // Asta previne blocarea adminului pe pagini cu multe cereri (Participants, Logs)
+  if (!isVerifiedAdmin) {
+    const limiter = isAdminPath ? adminLimiter : publicLimiter;
+    const { success } = await limiter.limit(ip);
+    
+    if (!success) {
+      console.warn(`[SECURITY] Rate limit exceeded from ${ip} on ${pathname}`);
+      // Returnăm HTML pentru pagini și JSON pentru API
+      if (isApiRoute(req)) {
+        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+      }
+      return new NextResponse("Prea multe cereri. Reveniți în curând.", { status: 429 });
+    }
   }
 
-  // SECURITY 3: Verificare admin + session timeout
-  if (isAdmin) {
-    const userEmail = (authObj.sessionClaims?.email as string || "").toLowerCase();
+  // 4. AUTORIZARE: Verificăm accesul la rutele de Admin
+  if (isAdminPath) {
+    if (!authObj.userId) {
+      return authObj.redirectToSignIn();
+    }
 
-    // ✅ Parsing consistent cu env.ts (trim + lowercase)
-    const adminEmails = (process.env.ADMIN_EMAILS || "")
-      .split(",")
-      .map(e => e.trim().toLowerCase())
-      .filter(e => e.length > 0);
-
-    if (!userEmail || !adminEmails.includes(userEmail)) {
-      console.warn(`[SECURITY] Unauthorized admin access: ${userEmail || "unknown"} from ${ip}`);
+    if (!isVerifiedAdmin) {
+      console.error(`[SECURITY] Unauthorized admin attempt: ${userEmail} from ${ip}`);
       return NextResponse.redirect(new URL("/", req.url));
     }
 
+    // Session Timeout Check
     const lastActive = req.cookies.get("last_admin_activity")?.value;
-    if (!checkSessionTimeout(lastActive, now)) {
-      console.warn(`[SECURITY] Session timeout for ${userId} from ${ip}`);
+    if (lastActive && (now - parseInt(lastActive, 10) > SESSION_TIMEOUT)) {
+      console.log(`[SECURITY] Session expired for ${userEmail}`);
       const res = NextResponse.redirect(new URL("/sign-in", req.url));
       res.cookies.delete("__session");
       res.cookies.delete("last_admin_activity");
@@ -136,16 +118,15 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
   }
 
-  // SECURITY 4: CSRF
+  // 5. CSRF Validation
   if (!validateCsrf(req)) {
-    console.warn(`[SECURITY] CSRF detected from ${ip}`);
-    return NextResponse.json({ error: "CSRF Detected" }, { status: 403 });
+    return NextResponse.json({ error: "Invalid Origin" }, { status: 403 });
   }
 
-  // RESPONSE FINAL
+  // 6. RESPONSE FINAL & SECURITY HEADERS
   const response = NextResponse.next();
 
-  if (isAdmin) {
+  if (isVerifiedAdmin && isAdminPath) {
     response.cookies.set("last_admin_activity", now.toString(), {
       httpOnly: true,
       secure: true,
@@ -153,11 +134,12 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       path: "/",
       maxAge: SESSION_TIMEOUT / 1000,
     });
+    // Prevenim caching-ul paginilor de admin
     response.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
   }
 
   return applyUltraSecurity(response, {
-    admin: isAdmin,
+    admin: isAdminPath,
     development: process.env.NODE_ENV === "development",
   });
 });
